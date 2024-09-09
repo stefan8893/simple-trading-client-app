@@ -8,6 +8,7 @@ on:
 
 jobs:
   has_next_version:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -22,7 +23,7 @@ jobs:
 
       - name: Get next version
         id: get_next_version
-        uses: thenativeweb/get-next-version@2.6.2
+        uses: thenativeweb/get-next-version@2.6.3
 
       - name: Tag new version
         if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
@@ -54,14 +55,11 @@ jobs:
           npm version ${{ env.Version }} --allow-same-version --no-git-tag-version
           npm run build
 
-      - name: Zip artifact
-        run: zip -r artifact.zip ./dist/*
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: simple-trading
-          path: ./artifact.zip
+          path: ./dist
 
   deploy:
     runs-on: ubuntu-latest
@@ -76,9 +74,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: simple-trading
-
-      - name: Unzip artifact
-        run: unzip artifact.zip
+          path: ./
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -92,6 +88,10 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            az storage blob upload-batch --account-name "$CLIENT_APP_STORAGE_ACCOUNT" --destination '$web' --source ./dist/simple-trading/browser --overwrite
+            az storage blob delete-batch --account-name "$CLIENT_APP_STORAGE_ACCOUNT" --source '$web' --pattern '*'
+            az storage blob upload-batch --account-name "$CLIENT_APP_STORAGE_ACCOUNT" --destination '$web' --source ./simple-trading/browser --overwrite
+
+            # set cache-control header for index.html only by re-uploading it with the --content-cache option
+            az storage blob upload --account-name "$CLIENT_APP_STORAGE_ACCOUNT" --container-name '$web' --file ./simple-trading/browser/index.html --name index.html --content-cache 'no-cache' --overwrite
         env:
           CLIENT_APP_STORAGE_ACCOUNT: ${{ vars.CLIENT_APP_STORAGE_ACCOUNT }}

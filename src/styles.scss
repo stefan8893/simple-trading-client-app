@@ -1,1 +1,26 @@
-/* You can add global styles to this file, and also import other style files */
+@import "./styles/fonts";
+@import "primeng/resources/themes/aura-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+@import "primeflex/primeflex.css";
+@import "./styles/prime-overrides";
+
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body,
+body .p-component {
+  font-family: 'Roboto' !important;
+  font-size: .875rem !important;
+}
+
+.disable-link-styling {
+  color: inherit;
+  text-decoration: inherit;
+}

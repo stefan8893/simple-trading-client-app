@@ -1,0 +1,74 @@
+@import '../../../../styles/layout-variables';
+
+.layout {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "header header"
+    "nav content";
+}
+
+.header {
+  grid-area: header;
+}
+
+.side-nav {
+  grid-area: nav;
+  z-index: 2;
+  overflow-y: auto;
+  transition: 0.3s cubic-bezier(.36,-0.01,0,.77);
+}
+
+.side-nav-closed-animated{
+  margin-left: -200px;
+}
+
+.side-nav-closed-slowly-animated {
+  margin-left: -200px;
+  transition: 1s;
+}
+
+.side-nav-closed-instantly{
+  margin-left: -200px;
+  transition: 0ms;
+}
+
+.content {
+  grid-area: content;
+  position: relative;
+  overflow-y: auto;
+}
+
+.content.overlayed {
+  overflow: hidden;
+}
+
+.overlay {
+  display: none;
+}
+
+.overlay-show {
+  position: absolute;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 1000vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+@media (max-width: calc(#{$mobile-breakpoint} - 1px)) {
+  .side-nav{
+    position: absolute;
+  }
+}
